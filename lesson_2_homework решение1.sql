@@ -1,54 +1,60 @@
---схема БД: https://docs.google.com/document/d/1NVORWgdwlKepKq_b8SPRaSpraltxoMg2SIusTEN6mEQ/edit?usp=sharing
+--СЃС…РµРјР° Р‘Р”: https://docs.google.com/document/d/1NVORWgdwlKepKq_b8SPRaSpraltxoMg2SIusTEN6mEQ/edit?usp=sharing
 --colab/jupyter: https://colab.research.google.com/drive/1j4XdGIU__NYPVpv74vQa9HUOAkxsgUez?usp=sharing
 
---Задание 1: Вывести name, class по кораблям, выпущенным после 1920
+--Р—Р°РґР°РЅРёРµ 1: Р’С‹РІРµСЃС‚Рё name, class РїРѕ РєРѕСЂР°Р±Р»СЏРј, РІС‹РїСѓС‰РµРЅРЅС‹Рј РїРѕСЃР»Рµ 1920
 
 select name, class from ships
 where launched > 1920
 
---Задание 2: Вывести name, class по кораблям, выпущенным после 1920, но не позднее 1942
+--Р—Р°РґР°РЅРёРµ 2: Р’С‹РІРµСЃС‚Рё name, class РїРѕ РєРѕСЂР°Р±Р»СЏРј, РІС‹РїСѓС‰РµРЅРЅС‹Рј РїРѕСЃР»Рµ 1920, РЅРѕ РЅРµ РїРѕР·РґРЅРµРµ 1942
 
 select name, class from ships
 where launched between 1920 and 1942
 
---Задание 3: Какое количество кораблей в каждом классе. Вывести количество и class
+--Р—Р°РґР°РЅРёРµ 3: РљР°РєРѕРµ РєРѕР»РёС‡РµСЃС‚РІРѕ РєРѕСЂР°Р±Р»РµР№ РІ РєР°Р¶РґРѕРј РєР»Р°СЃСЃРµ. Р’С‹РІРµСЃС‚Рё РєРѕР»РёС‡РµСЃС‚РІРѕ Рё class
 
-select class , count(name) as Количество from ships group by class
+select class , count(name) as РљРѕР»РёС‡РµСЃС‚РІРѕ from ships group by class
  
---Задание 4: Для классов кораблей, калибр орудий которых не менее 16, укажите класс и страну. (таблица classes)
+--Р—Р°РґР°РЅРёРµ 4: Р”Р»СЏ РєР»Р°СЃСЃРѕРІ РєРѕСЂР°Р±Р»РµР№, РєР°Р»РёР±СЂ РѕСЂСѓРґРёР№ РєРѕС‚РѕСЂС‹С… РЅРµ РјРµРЅРµРµ 16, СѓРєР°Р¶РёС‚Рµ РєР»Р°СЃСЃ Рё СЃС‚СЂР°РЅСѓ. (С‚Р°Р±Р»РёС†Р° classes)
 
 select class, country from classes where bore >= 16 
 
---Задание 5: Укажите корабли, потопленные в сражениях в Северной Атлантике (таблица Outcomes, North Atlantic). Вывод: ship.
+--Р—Р°РґР°РЅРёРµ 5: РЈРєР°Р¶РёС‚Рµ РєРѕСЂР°Р±Р»Рё, РїРѕС‚РѕРїР»РµРЅРЅС‹Рµ РІ СЃСЂР°Р¶РµРЅРёСЏС… РІ РЎРµРІРµСЂРЅРѕР№ РђС‚Р»Р°РЅС‚РёРєРµ (С‚Р°Р±Р»РёС†Р° Outcomes, North Atlantic). Р’С‹РІРѕРґ: ship.
 
 select ship from outcomes where result = 'sunk' and battle = 'North Atlantic'
 
---Задание 6: Вывести название (ship) последнего потопленного корабля
+--Р—Р°РґР°РЅРёРµ 6: Р’С‹РІРµСЃС‚Рё РЅР°Р·РІР°РЅРёРµ (ship) РїРѕСЃР»РµРґРЅРµРіРѕ РїРѕС‚РѕРїР»РµРЅРЅРѕРіРѕ РєРѕСЂР°Р±Р»СЏ
 
 select ship from battles 
 left join outcomes on battles.name = outcomes.battle 
 where  date = (select max(date) from battles join outcomes on battles.name = outcomes.battle ) and result = 'sunk'
 
---Задание 7: Вывести название корабля (ship) и класс (class) последнего потопленного корабля
+--Р—Р°РґР°РЅРёРµ 7: Р’С‹РІРµСЃС‚Рё РЅР°Р·РІР°РЅРёРµ РєРѕСЂР°Р±Р»СЏ (ship) Рё РєР»Р°СЃСЃ (class) РїРѕСЃР»РµРґРЅРµРіРѕ РїРѕС‚РѕРїР»РµРЅРЅРѕРіРѕ РєРѕСЂР°Р±Р»СЏ
 
 Select a.ship, a.class from (
-Select ship, class, date from Outcomes full outer join Battles on Outcomes.battle = Battles.name join Classes on Classes.class=Outcomes.ship  where result = 'sunk'
+Select ship, class, date 
+from Outcomes full outer 
+join Battles on Outcomes.battle = Battles.name join Classes on Classes.class=Outcomes.ship  where result = 'sunk'
 union
-Select ship, Classes.class, date from Outcomes full outer join Battles on Outcomes.battle = Battles.name join Ships on Outcomes.ship = Ships.name join Classes on Classes.class=Ships.class  where result = 'sunk') as a where a.date = (select max(date) from (Select ship, class, date from Outcomes full outer join Battles on Outcomes.battle = Battles.name join Classes on Classes.class=Outcomes.ship  where result = 'sunk'
+Select ship, Classes.class, date 
+from Outcomes full outer join Battles on Outcomes.battle = Battles.name 
+join Ships on Outcomes.ship = Ships.name 
+join Classes on Classes.class=Ships.class  
+where result = 'sunk') as a 
+where a.date = (select max(date) from (Select ship, class, date from Outcomes full outer join Battles on Outcomes.battle = Battles.name join Classes on Classes.class=Outcomes.ship  where result = 'sunk'
 union
 Select ship, Classes.class, date from Outcomes full outer join Battles on Outcomes.battle = Battles.name join Ships on Outcomes.ship = Ships.name join Classes on Classes.class=Ships.class  where result = 'sunk') as d)
 
-
---Задание 8: Вывести все потопленные корабли, у которых калибр орудий не менее 16, и которые потоплены. Вывод: ship, class
+--Р—Р°РґР°РЅРёРµ 8: Р’С‹РІРµСЃС‚Рё РІСЃРµ РїРѕС‚РѕРїР»РµРЅРЅС‹Рµ РєРѕСЂР°Р±Р»Рё, Сѓ РєРѕС‚РѕСЂС‹С… РєР°Р»РёР±СЂ РѕСЂСѓРґРёР№ РЅРµ РјРµРЅРµРµ 16, Рё РєРѕС‚РѕСЂС‹Рµ РїРѕС‚РѕРїР»РµРЅС‹. Р’С‹РІРѕРґ: ship, class
 
 select ship, classes.class from classes 
 inner join outcomes on classes.class = outcomes.ship
 where bore >= 16 and result = 'sunk' 
 
---Задание 9: Вывести все классы кораблей, выпущенные США (таблица classes, country = 'USA'). Вывод: class
+--Р—Р°РґР°РЅРёРµ 9: Р’С‹РІРµСЃС‚Рё РІСЃРµ РєР»Р°СЃСЃС‹ РєРѕСЂР°Р±Р»РµР№, РІС‹РїСѓС‰РµРЅРЅС‹Рµ РЎРЁРђ (С‚Р°Р±Р»РёС†Р° classes, country = 'USA'). Р’С‹РІРѕРґ: class
 
 select class from classes where country = 'USA'
 
---Задание 10: Вывести все корабли, выпущенные США (таблица classes & ships, country = 'USA'). Вывод: name, class
+--Р—Р°РґР°РЅРёРµ 10: Р’С‹РІРµСЃС‚Рё РІСЃРµ РєРѕСЂР°Р±Р»Рё, РІС‹РїСѓС‰РµРЅРЅС‹Рµ РЎРЁРђ (С‚Р°Р±Р»РёС†Р° classes & ships, country = 'USA'). Р’С‹РІРѕРґ: name, class
 
 select name, ships.class from ships left join classes on classes.class = ships.class where country = 'USA'
